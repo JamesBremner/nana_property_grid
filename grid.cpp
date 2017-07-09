@@ -3,7 +3,7 @@
 namespace nana
 {
 
-gridlb::gridlb( window wd, const rectangle& r)
+grid::grid( window wd, const rectangle& r)
     : listbox( wd, r )
     , myRowCount( 0 )
     , myColCount( 0 )
@@ -11,7 +11,7 @@ gridlb::gridlb( window wd, const rectangle& r)
 
 }
 
-void gridlb::Resize( int rows, int cols )
+void grid::Resize( int rows, int cols )
 {
     myRowCount = rows;
     myColCount = cols;
@@ -23,12 +23,12 @@ void gridlb::Resize( int rows, int cols )
         at(0).append({"", ""});
 }
 
-void gridlb::ColTitle( int col, const std::string& value )
+void grid::ColTitle( int col, const std::string& value )
 {
     column_at( col ).text( value );
 }
 
-void gridlb::Set( int row, int col, const std::string& value )
+void grid::Set( int row, int col, const std::string& value )
 {
     if( ! CheckIndex( row, col ) )
         return;
@@ -36,7 +36,7 @@ void gridlb::Set( int row, int col, const std::string& value )
 
 }
 
-bool gridlb::CheckIndex( int row, int col )
+bool grid::CheckIndex( int row, int col )
 {
     if( 0 > row || row >= myRowCount ||
             0 > col || col >= myColCount )
@@ -45,7 +45,7 @@ bool gridlb::CheckIndex( int row, int col )
 }
 
 property_grid::property_grid( window wd, const rectangle& r)
-    : gridlb( wd, r )
+    : grid( wd, r )
     , myPropCount( 0 )
 {
     Resize( 5, 2 );
@@ -70,16 +70,26 @@ void property_grid::Add(
     const std::string& value )
 {
     myMap.insert( std::make_pair( name,myPropCount ));
-    gridlb::Set( myPropCount, 0, name );
-    gridlb::Set( myPropCount, 1, value );
+    grid::Set( myPropCount, 0, name );
+    grid::Set( myPropCount, 1, value );
     myPropCount++;
 }
+
+
+//template <class T>
+//void property_grid::Add( const property<T>& prop )
+//{
+//    myMap.insert( std::make_pair( prop.myName,myPropCount ));
+//    grid::Set( myPropCount, 0, prop.myName );
+//    grid::Set( myPropCount, 1, prop.ValueString() );
+//    myPropCount++;
+//}
 
 void property_grid::Set(
     const std::string& name,
     const std::string& value )
 {
     int row = myMap.find( name )->second;
-    gridlb::Set( row, 1, value );
+    grid::Set( row, 1, value );
 }
 }
