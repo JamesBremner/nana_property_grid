@@ -36,7 +36,8 @@ protected:
 
 };
 
-namespace prop {
+namespace prop
+{
 
 enum class ePropertyType
 {
@@ -86,7 +87,7 @@ public:
     {
         myValue = atoi( sv.c_str() );
     }
-        ePropertyType Type()
+    ePropertyType Type()
     {
         return ePropertyType::Int;
     }
@@ -109,7 +110,7 @@ public:
     {
         myValue = atof( sv.c_str() );
     }
-        ePropertyType Type()
+    ePropertyType Type()
     {
         return ePropertyType::Dbl;
     }
@@ -132,7 +133,7 @@ public:
     {
         myValue = ( sv == "true" );
     }
-        ePropertyType Type()
+    ePropertyType Type()
     {
         return ePropertyType::Bool;
     }
@@ -149,6 +150,17 @@ class property_base
 {
 public:
     std::string myName;
+    std::string myLabel;
+
+    property_base(
+        const std::string name,
+        const std::string label )
+        : myName( name )
+        , myLabel( label )
+    {
+
+    }
+
     virtual std::string ValueAsString() const = 0;
     virtual void SetValue( const std::string& sv ) = 0;
     virtual ePropertyType Type() = 0;
@@ -163,10 +175,29 @@ public:
 
     value<T> myValue;
 
-    property( const std::string& name,
-              const T& value )
+    /** CTOR
+        @param[in] name of property, must be unique
+        @param[in] label for property, can be duplicated
+        @param[in] value
+    */
+    property(
+        const std::string& name,
+        const std::string& label,
+        const T& value )
+        : property_base( name, label )
     {
-        myName = name;
+        myValue.myValue = value;
+    }
+
+    /** CTOR
+        @param[in] name and label of property, must be unique
+        @param[in] value
+    */
+    property(
+        const std::string& name,
+        const T& value )
+        : property_base( name, name )
+    {
         myValue.myValue = value;
     }
     std::string ValueAsString() const

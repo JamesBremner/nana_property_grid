@@ -21,7 +21,7 @@ void Read( prop::vector_t& vp)
     vp.emplace_back(new property<std::string>( "D", "10" ));
     vp.emplace_back(new property<int>( "E", 99 ));
     vp.emplace_back(new property<double>( "F", 0.42 ));
-    vp.emplace_back(new property<bool>( "G", false ));
+    vp.emplace_back(new property<bool>( "G", "the G factor", false ));
 }
 
 /** Save properties
@@ -46,8 +46,6 @@ int main()
 
     try
     {
-
-
         // construct property grid
         prop::grid pg( fm, nana::rectangle(10, 25, 280, 150 ));
 

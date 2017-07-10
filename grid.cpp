@@ -114,7 +114,7 @@ void grid::Set( vector_t& v )
         std::string name = prop->myName;
         if ( myMap.insert( std::make_pair( name, propCount )).second )
         {
-            nana::grid::Set( propCount, 0, name );
+            nana::grid::Set( propCount, 0, prop->myLabel );
             nana::grid::Set( propCount, 1, prop->ValueAsString() );
         }
         else
