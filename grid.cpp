@@ -1,4 +1,5 @@
 #include <nana/gui.hpp>
+#include <nana/gui/widgets/checkbox.hpp>
 #include <grid.hpp>
 namespace nana
 {
@@ -22,7 +23,6 @@ void grid::Resize( int rows, int cols )
     for( int krow = 0; krow < myRowCount; krow++ )
         at(0).append({"", ""});
 }
-
 void grid::ColTitle( int col, const std::string& value )
 {
     column_at( col ).text( value );
@@ -44,7 +44,8 @@ bool grid::CheckIndex( int row, int col )
     return true;
 }
 
-namespace prop {
+namespace prop
+{
 
 grid::grid( window wd, const rectangle& r)
     : nana::grid( wd, r )
@@ -57,18 +58,46 @@ grid::grid( window wd, const rectangle& r)
     events().click([this,wd]
     {
         auto sp = selected();
-        inputbox::text value(
-            at(sp[0]).text(0),
-            at(sp[0]).text(1) );
-        inputbox inbox(wd,"Edit property value");
-        if( inbox.show_modal( value ) ) {
-            // user has entered new value
+        std::string propName = at(sp[0]).text(0);
+        int propIndex = sp[0].item;
+        switch( myVP->at( propIndex )->Type() )
+        {
 
-            // display value
-            at(sp[0]).text(1,value.value());
+        default:
+        {
+            inputbox::text value(
+                propName,
+                at(sp[0]).text(1) );
+            inputbox inbox(wd,"Edit property value");
+            if( inbox.show_modal( value ) )
+            {
+                // user has entered new value
 
-            // store value
-            myVP->at( myMap.find( at(sp[0]).text(0) )->second )->SetValue( value.value() );
+                // display value
+                at(sp[0]).text(1,value.value());
+
+                // store value
+                myVP->at( propIndex )->SetValue( value.value() );
+            }
+        }
+        break;
+
+        case ePropertyType::Bool:
+        {
+            std::vector< std::string> opts {"true", "false"};
+            inputbox::text value(
+                propName, opts);
+            inputbox inbox(wd,"Edit property value");
+            if( inbox.show_modal( value ) )
+            {
+                // display value
+                at(sp[0]).text(1,value.value());
+
+                // store value
+                myVP->at( propIndex )->SetValue( value.value() );
+            }
+        }
+        break;
         }
     });
 }

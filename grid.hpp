@@ -38,6 +38,13 @@ protected:
 
 namespace prop {
 
+enum class ePropertyType
+{
+    Str,
+    Int,
+    Dbl,
+    Bool,
+};
 template <class T>
 class value
 {
@@ -54,6 +61,11 @@ public:
     void SetValue( const std::string& sv )
     {
         myValue = sv;
+    }
+
+    ePropertyType Type()
+    {
+        return ePropertyType::Str;
     }
 };
 
@@ -74,6 +86,10 @@ public:
     {
         myValue = atoi( sv.c_str() );
     }
+        ePropertyType Type()
+    {
+        return ePropertyType::Int;
+    }
 };
 
 template <>
@@ -92,6 +108,10 @@ public:
     void SetValue( const std::string& sv )
     {
         myValue = atof( sv.c_str() );
+    }
+        ePropertyType Type()
+    {
+        return ePropertyType::Dbl;
     }
 };
 
@@ -112,6 +132,10 @@ public:
     {
         myValue = ( sv == "true" );
     }
+        ePropertyType Type()
+    {
+        return ePropertyType::Bool;
+    }
 };
 
 /** Property base class
@@ -127,6 +151,7 @@ public:
     std::string myName;
     virtual std::string ValueAsString() const = 0;
     virtual void SetValue( const std::string& sv ) = 0;
+    virtual ePropertyType Type() = 0;
 };
 
 /** Property -  a name value pair with templated value type */
@@ -152,6 +177,11 @@ public:
     void SetValue( const std::string& sv )
     {
         myValue.SetValue( sv );
+    }
+
+    ePropertyType Type()
+    {
+        return myValue.Type();
     }
 
 };
