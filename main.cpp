@@ -16,6 +16,8 @@ void Read( prop::vector_t& vp)
     using namespace prop;
     vp.emplace_back(new property<std::string>( "A", "10" ));
     vp.emplace_back(new property<int>( "B", 99 ));
+    vp.emplace_back(new property<double>( "C", 0.42 ));
+    vp.emplace_back(new property<bool>( "Enable Feature", false ));
 }
 
 /** Save properties

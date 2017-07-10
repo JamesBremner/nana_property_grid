@@ -48,7 +48,6 @@ namespace prop {
 
 grid::grid( window wd, const rectangle& r)
     : nana::grid( wd, r )
-    , myPropCount( 0 )
 {
     Resize( 5, 2 );
     ColTitle(0,"Property");
@@ -81,11 +80,11 @@ void grid::Add( vector_t& v )
     myVP = &v;
     for( auto& prop : *myVP )
     {
+        int propCount = myMap.size();
         std::string name = prop->myName;
-        myMap.insert( std::make_pair( name,myPropCount ));
-        nana::grid::Set( myPropCount, 0, name );
-        nana::grid::Set( myPropCount, 1, prop->ValueAsString() );
-        myPropCount++;
+        myMap.insert( std::make_pair( name, propCount ));
+        nana::grid::Set( propCount, 0, name );
+        nana::grid::Set( propCount, 1, prop->ValueAsString() );
     }
 }
 
@@ -97,17 +96,17 @@ void grid::Set(
     nana::grid::Set( row, 1, value );
 }
 
-std::vector< std::pair< std::string, std::string > >
-grid::AllProps()
-{
-    std::vector< std::pair< std::string, std::string > > vp;
-    for( int k = 0; k < myPropCount; k++ )
-    {
-        vp.push_back(std::make_pair(
-                         at(listbox::index_pair(0,k)).text(0),
-                         at(listbox::index_pair(0,k)).text(1) ));
-    }
-    return vp;
-}
+//std::vector< std::pair< std::string, std::string > >
+//grid::AllProps()
+//{
+//    std::vector< std::pair< std::string, std::string > > vp;
+//    for( int k = 0; k < myPropCount; k++ )
+//    {
+//        vp.push_back(std::make_pair(
+//                         at(listbox::index_pair(0,k)).text(0),
+//                         at(listbox::index_pair(0,k)).text(1) ));
+//    }
+//    return vp;
+//}
 }
 }

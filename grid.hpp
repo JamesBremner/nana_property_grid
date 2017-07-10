@@ -38,6 +38,82 @@ protected:
 
 namespace prop {
 
+template <class T>
+class value
+{
+public:
+
+    T myValue;
+
+    std::string AsString() const
+    {
+        std::stringstream ss;
+        ss << myValue;
+        return ss.str();
+    }
+    void SetValue( const std::string& sv )
+    {
+        myValue = sv;
+    }
+};
+
+template <>
+class value<int>
+{
+public:
+
+    int myValue;
+
+    std::string AsString() const
+    {
+        std::stringstream ss;
+        ss << myValue;
+        return ss.str();
+    }
+    void SetValue( const std::string& sv )
+    {
+        myValue = atoi( sv.c_str() );
+    }
+};
+
+template <>
+class value<double>
+{
+public:
+
+    double myValue;
+
+    std::string AsString() const
+    {
+        std::stringstream ss;
+        ss << myValue;
+        return ss.str();
+    }
+    void SetValue( const std::string& sv )
+    {
+        myValue = atof( sv.c_str() );
+    }
+};
+
+template <>
+class value<bool>
+{
+public:
+
+    bool myValue;
+
+    std::string AsString() const
+    {
+        if( myValue )
+            return "true";
+        return "false";
+    }
+    void SetValue( const std::string& sv )
+    {
+        myValue = ( sv == "true" );
+    }
+};
+
 /** Property base class
 
 This non-templated base class allows pointers to properties of any type
@@ -60,55 +136,22 @@ class property : public property_base
 {
 public:
 
-    T myValue;
+    value<T> myValue;
 
     property( const std::string& name,
               const T& value )
     {
         myName = name;
-        myValue = value;
+        myValue.myValue = value;
     }
     std::string ValueAsString() const
     {
-        std::stringstream ss;
-        ss.str("");
-        ss << myValue;
-        return ss.str();
+        return myValue.AsString();
     }
 
     void SetValue( const std::string& sv )
     {
-        myValue = sv;
-    }
-
-};
-
-/** Property template specialisation for integers */
-
-template <>
-class property<int> : public property_base
-{
-public:
-
-    int myValue;
-
-    property( const std::string& name,
-              const int& value )
-    {
-        myName = name;
-        myValue = value;
-    }
-    std::string ValueAsString() const
-    {
-        std::stringstream ss;
-        ss.str("");
-        ss << myValue;
-        return ss.str();
-    }
-
-    void SetValue( const std::string& sv )
-    {
-        myValue = atoi( sv.c_str() );
+        myValue.SetValue( sv );
     }
 
 };
@@ -138,14 +181,13 @@ public:
         Set( prop.myName, prop.ValueAsString() );
     }
 
-    /** Return all properties in a vector of string pairs */
-    std::vector< std::pair< std::string, std::string > >
-    AllProps();
-
 
 private:
-    int myPropCount;
+
+    /// map property names to indices
     std::map< std::string, int > myMap;
+
+    /// pointer to external property vector
     vector_t * myVP;
 
 };
