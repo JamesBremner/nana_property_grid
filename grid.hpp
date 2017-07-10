@@ -196,9 +196,18 @@ class grid : public nana::grid
 public:
     grid( window wd, const rectangle& r = rectangle());
 
-    /** Add properties from vector */
-    void Add( vector_t& v );
+    /** Add properties vector vector
+        @param[in] v vector of properties
 
+        The properties in this vector will be used to initialize the grid.
+        When user edits property values in the grid
+        the property values in this vector will be updated.
+
+        A pointer to the vector is stored, so the calling code
+        must ensure that the vector does not go out of scope
+        before the grid does
+     */
+    void Set( vector_t& v );
 
     /** Change value of existing property */
     void Set(

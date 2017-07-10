@@ -104,16 +104,26 @@ grid::grid( window wd, const rectangle& r)
 
 
 
-void grid::Add( vector_t& v )
+void grid::Set( vector_t& v )
 {
     myVP = &v;
+    Resize( myVP->size(), 2 );
     for( auto& prop : *myVP )
     {
         int propCount = myMap.size();
         std::string name = prop->myName;
-        myMap.insert( std::make_pair( name, propCount ));
-        nana::grid::Set( propCount, 0, name );
-        nana::grid::Set( propCount, 1, prop->ValueAsString() );
+        if ( myMap.insert( std::make_pair( name, propCount )).second )
+        {
+            nana::grid::Set( propCount, 0, name );
+            nana::grid::Set( propCount, 1, prop->ValueAsString() );
+        }
+        else
+        {
+            std::stringstream ss;
+            ss << "property:grid.Set() Two properties have same label: ";
+            ss << name;
+            throw std::runtime_error( ss.str() );
+        }
     }
 }
 

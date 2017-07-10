@@ -16,8 +16,12 @@ void Read( prop::vector_t& vp)
     using namespace prop;
     vp.emplace_back(new property<std::string>( "A", "10" ));
     vp.emplace_back(new property<int>( "B", 99 ));
+    //vp.emplace_back(new property<int>( "B", 100 ));   // Duplicate name
     vp.emplace_back(new property<double>( "C", 0.42 ));
-    vp.emplace_back(new property<bool>( "Enable Feature", false ));
+    vp.emplace_back(new property<std::string>( "D", "10" ));
+    vp.emplace_back(new property<int>( "E", 99 ));
+    vp.emplace_back(new property<double>( "F", 0.42 ));
+    vp.emplace_back(new property<bool>( "G", false ));
 }
 
 /** Save properties
@@ -38,13 +42,14 @@ void Save( const prop::vector_t& vp)
 }
 int main()
 {
+    form fm;
 
     try
     {
-        form fm;
+
 
         // construct property grid
-        prop::grid pg( fm, nana::rectangle(10, 25, 280, 300 ));
+        prop::grid pg( fm, nana::rectangle(10, 25, 280, 150 ));
 
         // construct vector to store properties
         // as we work with them
@@ -54,7 +59,7 @@ int main()
         Read( vp );
 
         // Place properties into grid
-        pg.Add( vp );
+        pg.Set( vp );
 
         // Button to save the edited properties
         button save( fm,  nana::rectangle(60, 5, 50, 20 ));
@@ -76,8 +81,10 @@ int main()
     catch( std::runtime_error& e )
     {
         // horrible error somewhere
+        fm.show();
         msgbox mb( e.what() );
         mb();
+        exec();
     }
 }
 
