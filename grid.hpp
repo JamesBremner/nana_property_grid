@@ -38,13 +38,14 @@ protected:
 
 namespace prop
 {
-
+/** Property types supported */
 enum class ePropertyType
 {
     Str,
     Int,
     Dbl,
     Bool,
+    Enm,
 };
 template <class T>
 class value
@@ -52,6 +53,7 @@ class value
 public:
 
     T myValue;
+    int mySelected;
 
     std::string AsString() const
     {
@@ -63,10 +65,14 @@ public:
     {
         myValue = sv;
     }
-
     ePropertyType Type()
     {
         return ePropertyType::Str;
+    }
+
+    std::vector< std::string > Options()
+    {
+        return std::vector< std::string >();
     }
 };
 
@@ -76,6 +82,7 @@ class value<int>
 public:
 
     int myValue;
+    int mySelected;
 
     std::string AsString() const
     {
@@ -91,6 +98,11 @@ public:
     {
         return ePropertyType::Int;
     }
+    std::vector< std::string > Options()
+    {
+        return std::vector< std::string >();
+    }
+
 };
 
 template <>
@@ -99,6 +111,7 @@ class value<double>
 public:
 
     double myValue;
+    int mySelected;
 
     std::string AsString() const
     {
@@ -114,6 +127,10 @@ public:
     {
         return ePropertyType::Dbl;
     }
+    std::vector< std::string > Options()
+    {
+        return std::vector< std::string >();
+    }
 };
 
 template <>
@@ -122,6 +139,7 @@ class value<bool>
 public:
 
     bool myValue;
+    int mySelected;
 
     std::string AsString() const
     {
@@ -136,6 +154,46 @@ public:
     ePropertyType Type()
     {
         return ePropertyType::Bool;
+    }
+    std::vector< std::string > Options()
+    {
+        return std::vector< std::string >();
+    }
+};
+
+template <>
+class value<std::vector<std::string>>
+{
+public:
+
+    std::vector<std::string> myValue;
+    int mySelected;
+
+    std::string AsString() const
+    {
+        if( ! myValue.size() )
+            return "";
+        return myValue[ mySelected];
+    }
+    void SetValue( const std::string& sv )
+    {
+        auto it = std::find(
+                      myValue.begin(),
+                      myValue.end(),
+                      sv );
+        if( it == myValue.end() )
+            mySelected = 0;
+        else
+            mySelected = it - myValue.begin();
+    }
+
+    ePropertyType Type()
+    {
+        return ePropertyType::Enm;
+    }
+    std::vector< std::string > Options()
+    {
+        return myValue;
     }
 };
 
@@ -164,6 +222,7 @@ public:
     virtual std::string ValueAsString() const = 0;
     virtual void SetValue( const std::string& sv ) = 0;
     virtual ePropertyType Type() = 0;
+    virtual std::vector< std::string > Options() = 0;
 };
 
 /** Property -  a name value pair with templated value type */
@@ -213,6 +272,11 @@ public:
     ePropertyType Type()
     {
         return myValue.Type();
+    }
+
+    std::vector< std::string > Options()
+    {
+        return myValue.Options();
     }
 
 };

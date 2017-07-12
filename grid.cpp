@@ -98,6 +98,23 @@ grid::grid( window wd, const rectangle& r)
             }
         }
         break;
+
+        case ePropertyType::Enm:
+        {
+            inputbox::text value(
+                propName,
+                myVP->at( propIndex )->Options() );
+            inputbox inbox(wd,"Edit property value");
+            if( inbox.show_modal( value ) )
+            {
+                // display value
+                at(sp[0]).text(1,value.value());
+
+                // store value
+                myVP->at( propIndex )->SetValue( value.value() );
+            }
+        }
+        break;
         }
     });
 }
