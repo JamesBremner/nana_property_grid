@@ -47,7 +47,13 @@ enum class ePropertyType
     Dbl,
     Bool,
     Enm,
+    Cat,
 };
+
+class category_property : std::string
+{
+};
+
 template <class T>
 class value
 {
@@ -281,6 +287,64 @@ public:
     }
 
 };
+
+
+template <>
+class property<category_property> : public property_base
+{
+public:
+
+    value<std::string> myValue;
+
+    /** CTOR
+        @param[in] name of property, must be unique
+        @param[in] label for property, can be duplicated
+        @param[in] value
+    */
+    property(
+        const std::string& name,
+        const std::string& label,
+        const std::string& value )
+        : property_base( name, name )
+    {
+        myValue.myValue = name;
+    }
+
+    /** CTOR
+        @param[in] name and label of property, must be unique
+        @param[in] value
+    */
+    property(
+        const std::string& name,
+        const std::string& value )
+        : property_base( name, name )
+    {
+         myValue.myValue = name;
+    }
+    std::string ValueAsString() const
+    {
+        return myName;
+    }
+
+    void SetValue( const std::string& sv )
+    {
+        myValue.SetValue( sv );
+    }
+
+    ePropertyType Type()
+    {
+        return ePropertyType::Cat;
+    }
+
+    std::vector< std::string > Options()
+    {
+        return myValue.Options();
+    }
+
+};
+
+
+
 
 /** vector of pointers to properties */
 typedef std::vector< std::shared_ptr< property_base > > vector_t;

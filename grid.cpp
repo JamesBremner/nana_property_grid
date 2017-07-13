@@ -55,7 +55,7 @@ namespace prop
 grid::grid( window wd, const rectangle& r)
     : nana::grid( wd, r )
 {
-    Resize( 5, 2 );
+    Resize( 0, 2 );
     ColTitle(0,"Property");
     ColTitle(1,"Value");
     ColWidth(1, 50 );
@@ -64,8 +64,10 @@ grid::grid( window wd, const rectangle& r)
     events().click([this,wd]
     {
         auto sp = selected();
+        if( sp.size() != 1 )
+            return;
         std::string propName = at(sp[0]).text(0);
-        int propIndex = sp[0].item;
+        int propIndex = myMap.find( propName )->second;
         switch( myVP->at( propIndex )->Type() )
         {
 
@@ -121,6 +123,9 @@ grid::grid( window wd, const rectangle& r)
             }
         }
         break;
+
+        case ePropertyType::Cat:
+            break;
         }
     });
 }
@@ -130,15 +135,25 @@ grid::grid( window wd, const rectangle& r)
 void grid::Set( vector_t& v )
 {
     myVP = &v;
-    Resize( myVP->size(), 2 );
+    auto cat = at(0);
     for( auto& prop : *myVP )
     {
+
         int propCount = myMap.size();
         std::string name = prop->myName;
         if ( myMap.insert( std::make_pair( name, propCount )).second )
         {
-            nana::grid::Set( propCount, 0, prop->myLabel );
-            nana::grid::Set( propCount, 1, prop->ValueAsString() );
+            if( prop->Type() == ePropertyType::Cat )
+            {
+                // add new category
+                cat = append( prop->myLabel);
+            }
+            else
+            {
+                // add new item to current category
+                cat.push_back(prop->myLabel);
+                cat.back().text(1,prop->ValueAsString());
+            }
         }
         else
         {
@@ -150,6 +165,8 @@ void grid::Set( vector_t& v )
     }
 }
 
+
+
 void grid::Set(
     const std::string& name,
     const std::string& value )
@@ -158,17 +175,6 @@ void grid::Set(
     nana::grid::Set( row, 1, value );
 }
 
-//std::vector< std::pair< std::string, std::string > >
-//grid::AllProps()
-//{
-//    std::vector< std::pair< std::string, std::string > > vp;
-//    for( int k = 0; k < myPropCount; k++ )
-//    {
-//        vp.push_back(std::make_pair(
-//                         at(listbox::index_pair(0,k)).text(0),
-//                         at(listbox::index_pair(0,k)).text(1) ));
-//    }
-//    return vp;
-//}
+
 }
 }
