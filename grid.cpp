@@ -14,20 +14,25 @@ grid::grid( window wd, const rectangle& r)
 
 void grid::Resize( int rows, int cols )
 {
+    int newRows = rows - myRowCount;
+    int newCols = cols - myColCount;
     myRowCount = rows;
     myColCount = cols;
 
-    for( int kcol = 0; kcol < myColCount; kcol++ )
+    for( int kcol = 0; kcol < newCols; kcol++ )
         append_header("c", 200);
 
-    for( int krow = 0; krow < myRowCount; krow++ )
+    for( int krow = 0; krow < newRows; krow++ )
         at(0).append({"", ""});
 }
 void grid::ColTitle( int col, const std::string& value )
 {
     column_at( col ).text( value );
 }
-
+void grid::ColWidth( int col, int width )
+{
+    column_at( col ).width( width );
+}
 void grid::Set( int row, int col, const std::string& value )
 {
     if( ! CheckIndex( row, col ) )
@@ -53,6 +58,7 @@ grid::grid( window wd, const rectangle& r)
     Resize( 5, 2 );
     ColTitle(0,"Property");
     ColTitle(1,"Value");
+    ColWidth(1, 50 );
 
     // prompt user to edit value of property clicked on
     events().click([this,wd]

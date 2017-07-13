@@ -22,6 +22,7 @@ public:
     void Resize( int rows, int cols );
 
     void ColTitle( int col, const std::string& value );
+    void ColWidth( int col, int width );
 
     /** Set cell value */
     void Set( int row, int col, const std::string& value );
