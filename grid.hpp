@@ -58,6 +58,12 @@ public:
     T myValue;
     int mySelected;
 
+    value()
+        : mySelected( 0 )
+    {
+
+    }
+
     std::string AsString() const
     {
         std::stringstream ss;
@@ -164,6 +170,8 @@ public:
     }
 };
 
+/// Specialisation for enumerated string value
+
 template <>
 class value<std::vector<std::string>>
 {
@@ -172,9 +180,16 @@ public:
     std::vector<std::string> myValue;
     int mySelected;
 
+    value()
+        : mySelected( 0 )
+    {
+    }
+
     std::string AsString() const
     {
-        if( ! myValue.size() )
+        if( ( ! myValue.size() ) ||
+                0 > mySelected  ||
+                mySelected >=  myValue.size() )
             return "";
         return myValue[ mySelected];
     }
@@ -287,13 +302,21 @@ public:
 class category : public property_base
 {
 public:
+        /** CTOR
+        @param[in] name and label of property, must be unique
+    */
     category( const std::string& name )
     : property_base(name,name)
     {
-
     }
-    virtual std::string ValueAsString() const { return myName; }
-    virtual void SetValue( const std::string& sv ) {}
+    std::string ValueAsString() const
+    {
+        return myName;
+    }
+
+    void SetValue( const std::string& sv )
+    {}
+
     virtual ePropertyType Type() { return ePropertyType::Cat; }
     virtual std::vector< std::string > Options() {  return std::vector< std::string >(); }
 };
