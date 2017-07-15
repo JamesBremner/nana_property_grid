@@ -22,7 +22,7 @@ void Read( prop::vector_t& vp)
     vp.emplace_back(new property<std::string>( "D", "10" ));
     vp.emplace_back(new property<int>( "E", 99 ));
     vp.emplace_back(new property<double>( "F", 0.42 ));
-    vp.emplace_back(new property<bool>( "G", "the G factor", false ));
+    vp.emplace_back(new property<bool>( "the G factor", "the G factor", false ));
     vp.emplace_back(new property<std::vector<std::string>>( "Plan", { "A","B","C"} ));
 }
 

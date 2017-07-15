@@ -67,7 +67,10 @@ grid::grid( window wd, const rectangle& r)
         if( sp.size() != 1 )
             return;
         std::string propName = at(sp[0]).text(0);
-        int propIndex = myMap.find( propName )->second;
+        auto it = myMap.find( propName );
+        if( it == myMap.end() )
+            return;
+        int propIndex = it->second;
         switch( myVP->at( propIndex )->Type() )
         {
 

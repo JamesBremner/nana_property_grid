@@ -62,6 +62,12 @@ public:
     T myValue;
     int mySelected;
 
+    value()
+    : mySelected( 0 )
+    {
+
+    }
+
     std::string AsString() const
     {
         std::stringstream ss;
@@ -178,7 +184,9 @@ public:
 
     std::string AsString() const
     {
-        if( ! myValue.size() )
+        if( ( ! myValue.size() ) ||
+           0 > mySelected  ||
+           mySelected >=  myValue.size() )
             return "";
         return myValue[ mySelected];
     }
