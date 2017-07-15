@@ -349,9 +349,9 @@ public:
     void Set( vector_t& v );
 
     /** Change value of existing property */
-    void Set(
-        const std::string& name,
-        const std::string& value );
+//    void Set(
+//        const std::string& name,
+//        const std::string& value );
 
     template <class T>
     void Set( const property<T>& prop )
@@ -361,9 +361,6 @@ public:
 
 
 private:
-
-    /// map property names to indices
-    std::map< std::string, int > myMap;
 
     /// pointer to external property vector
     vector_t * myVP;
