@@ -18,7 +18,8 @@ void Read( prop::vector_t& vp)
     vp.emplace_back(new property<int>( "B", 99 ));
     //vp.emplace_back(new property<int>( "B", 100 ));   // Duplicate name
     vp.emplace_back(new property<double>( "C", 0.42 ));
-    vp.emplace_back(new property<category_property>("second category",""));
+
+    vp.emplace_back( prop_t ( new prop::category("second category")));
     vp.emplace_back(new property<std::string>( "D", "10" ));
     vp.emplace_back(new property<int>( "E", 99 ));
     vp.emplace_back(new property<double>( "F", 0.42 ));

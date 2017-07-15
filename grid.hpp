@@ -50,10 +50,6 @@ enum class ePropertyType
     Cat,
 };
 
-class category_property : std::string
-{
-};
-
 template <class T>
 class value
 {
@@ -288,66 +284,26 @@ public:
 
 };
 
-
-template <>
-class property<category_property> : public property_base
+class category : public property_base
 {
 public:
-
-    value<std::string> myValue;
-
-    /** CTOR
-        @param[in] name of property, must be unique
-        @param[in] label for property, can be duplicated
-        @param[in] value
-    */
-    property(
-        const std::string& name,
-        const std::string& label,
-        const std::string& value )
-        : property_base( name, name )
+    category( const std::string& name )
+    : property_base(name,name)
     {
-        myValue.myValue = name;
-    }
 
-    /** CTOR
-        @param[in] name and label of property, must be unique
-        @param[in] value
-    */
-    property(
-        const std::string& name,
-        const std::string& value )
-        : property_base( name, name )
-    {
-         myValue.myValue = name;
     }
-    std::string ValueAsString() const
-    {
-        return myName;
-    }
-
-    void SetValue( const std::string& sv )
-    {
-        myValue.SetValue( sv );
-    }
-
-    ePropertyType Type()
-    {
-        return ePropertyType::Cat;
-    }
-
-    std::vector< std::string > Options()
-    {
-        return myValue.Options();
-    }
-
+    virtual std::string ValueAsString() const { return myName; }
+    virtual void SetValue( const std::string& sv ) {}
+    virtual ePropertyType Type() { return ePropertyType::Cat; }
+    virtual std::vector< std::string > Options() {  return std::vector< std::string >(); }
 };
 
 
 
 
 /** vector of pointers to properties */
-typedef std::vector< std::shared_ptr< property_base > > vector_t;
+typedef std::shared_ptr< property_base > prop_t;
+typedef std::vector< prop_t > vector_t;
 
 /** Property grid for handling name/value pairs */
 
