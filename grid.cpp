@@ -1,3 +1,4 @@
+#include <set>
 #include <nana/gui.hpp>
 #include <nana/gui/widgets/checkbox.hpp>
 #include <grid.hpp>
@@ -67,10 +68,11 @@ grid::grid( window wd, const rectangle& r)
         if( sp.size() != 1 )
             return;
         std::string propName = at(sp[0]).text(0);
-        auto it = myMap.find( propName );
-        if( it == myMap.end() )
-            return;
-        int propIndex = it->second;
+
+        // extract index of property in external vector
+        // from the associated value of the listbox item clicked on
+        int propIndex = at(sp[0]).value<int>();
+
         switch( myVP->at( propIndex )->Type() )
         {
 
@@ -138,13 +140,14 @@ grid::grid( window wd, const rectangle& r)
 void grid::Set( vector_t& v )
 {
     myVP = &v;
+    std::set< std::string > NameSet;
+    int propIndex = 0;
     auto cat = at(0);
     for( auto& prop : *myVP )
     {
 
-        int propCount = myMap.size();
         std::string name = prop->myName;
-        if ( myMap.insert( std::make_pair( name, propCount )).second )
+        if ( NameSet.insert( name ).second )
         {
             if( prop->Type() == ePropertyType::Cat )
             {
@@ -156,27 +159,34 @@ void grid::Set( vector_t& v )
                 // add new item to current category
                 cat.push_back(prop->myLabel);
                 cat.back().text(1,prop->ValueAsString());
+
+                // store the index of the property in the external vector
+                // as the assocaited value of the listbox item
+                // so that it can be easily recovered when user clicks on property
+                cat.back().value( propIndex );
             }
         }
         else
         {
             std::stringstream ss;
-            ss << "property:grid.Set() Two properties have same label: ";
+            ss << "property:grid.Set() Two properties have same name: ";
             ss << name;
             throw std::runtime_error( ss.str() );
         }
+
+        propIndex++;
     }
 }
 
 
-
-void grid::Set(
-    const std::string& name,
-    const std::string& value )
-{
-    int row = myMap.find( name )->second;
-    nana::grid::Set( row, 1, value );
-}
+//
+//void grid::Set(
+//    const std::string& name,
+//    const std::string& value )
+//{
+//    int row = myMap.find( name )->second;
+//    nana::grid::Set( row, 1, value );
+//}
 
 
 }
