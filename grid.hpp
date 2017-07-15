@@ -63,7 +63,7 @@ public:
     int mySelected;
 
     value()
-    : mySelected( 0 )
+        : mySelected( 0 )
     {
 
     }
@@ -174,6 +174,8 @@ public:
     }
 };
 
+/// Specialisation for enumerated string value
+
 template <>
 class value<std::vector<std::string>>
 {
@@ -182,11 +184,16 @@ public:
     std::vector<std::string> myValue;
     int mySelected;
 
+    value()
+        : mySelected( 0 )
+    {
+    }
+
     std::string AsString() const
     {
         if( ( ! myValue.size() ) ||
-           0 > mySelected  ||
-           mySelected >=  myValue.size() )
+                0 > mySelected  ||
+                mySelected >=  myValue.size() )
             return "";
         return myValue[ mySelected];
     }
@@ -327,7 +334,7 @@ public:
         const std::string& value )
         : property_base( name, name )
     {
-         myValue.myValue = name;
+        myValue.myValue = name;
     }
     std::string ValueAsString() const
     {
