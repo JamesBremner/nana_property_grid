@@ -189,7 +189,7 @@ public:
     {
         if( ( ! myValue.size() ) ||
                 0 > mySelected  ||
-                mySelected >=  myValue.size() )
+                mySelected >=  (int)myValue.size() )
             return "";
         return myValue[ mySelected];
     }
@@ -237,10 +237,30 @@ public:
 
     }
 
+    property_base(
+        const std::string name,
+        const std::string label,
+        ePropertyType type )
+        : myName( name )
+        , myLabel( label )
+        , myType( type )
+    {
+
+    }
+
     virtual std::string ValueAsString() const = 0;
     virtual void SetValue( const std::string& sv ) = 0;
-    virtual ePropertyType Type() = 0;
-    virtual std::vector< std::string > Options() = 0;
+    ePropertyType Type()
+    {
+        return myType;
+    }
+    virtual std::vector< std::string > Options()
+    {
+        return std::vector< std::string >();
+    }
+
+protected:
+    ePropertyType myType;
 };
 
 /** Property -  a name value pair with templated value type */
@@ -302,11 +322,11 @@ public:
 class category : public property_base
 {
 public:
-        /** CTOR
-        @param[in] name and label of property, must be unique
+    /** CTOR
+    @param[in] name of category
     */
     category( const std::string& name )
-    : property_base(name,name)
+        : property_base( name, name, ePropertyType::Cat )
     {
     }
     std::string ValueAsString() const
@@ -317,8 +337,45 @@ public:
     void SetValue( const std::string& sv )
     {}
 
-    virtual ePropertyType Type() { return ePropertyType::Cat; }
-    virtual std::vector< std::string > Options() {  return std::vector< std::string >(); }
+};
+
+class options : public property_base
+{
+public:
+    options( const std::string& name,
+             const std::vector< std::string >& vopts )
+        : property_base( name, name, ePropertyType::Enm )
+        , myValue( vopts )
+        , mySelection( 0 )
+    {
+
+    }
+    std::string ValueAsString() const
+    {
+        if( 0 > mySelection || mySelection >= (int)myValue.size() )
+            return "";
+        return myValue[ mySelection ];
+    }
+
+    std::vector< std::string > Options()
+    {
+        return myValue;
+    }
+
+    void SetValue( const std::string& sv )
+    {
+        auto it = std::find(
+                      myValue.begin(),
+                      myValue.end(),
+                      sv );
+        if( it == myValue.end() )
+            mySelection = 0;
+        else
+            mySelection = it - myValue.begin();
+    }
+private:
+    std::vector< std::string > myValue;
+    int mySelection;
 };
 
 
