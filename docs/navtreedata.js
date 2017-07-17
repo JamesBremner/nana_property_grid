@@ -1,6 +1,7 @@
 var NAVTREE =
 [
   [ "Nana_Property_Grid", "index.html", [
+    [ "Nana Property Grid", "index.html", null ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],

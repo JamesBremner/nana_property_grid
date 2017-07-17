@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Nana_Property_Grid: Main Page</title>
+<title>Nana_Property_Grid: Nana Property Grid</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -81,15 +81,56 @@ $(document).ready(function(){initNavTree('index.html','');});
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Nana_Property_Grid Documentation</div>  </div>
+<div class="title">Nana Property Grid </div>  </div>
 </div><!--header-->
 <div class="contents">
-</div><!-- contents -->
+<div class="textblock"><p>Demo program for <a class="el" href="classnana_1_1prop_1_1grid.html" title="Property grid for handling name/value pairs. ">nana::prop::grid</a>, a widget for handling name / value pairs.</p><pre></pre><pre>using namespace nana;</pre><pre>void Read( prop::vector_t&amp; vp)
+{
+    using namespace prop;
+    vp.emplace_back( prop_t ( new text( "A", "10" )));
+    vp.emplace_back( prop_t ( new integer( "B", 99 )));
+    vp.emplace_back( prop_t ( new real( "C", 0.42 )));</pre><pre>    vp.emplace_back( prop_t ( new prop::category( "second category")));
+    vp.emplace_back( prop_t ( new text( "D", "10" )));
+    vp.emplace_back( prop_t ( new integer( "E", 99 )));
+    vp.emplace_back( prop_t ( new real( "F", 0.42 )));
+    vp.emplace_back( prop_t ( new truefalse( "G", "the G factor", false )));
+    vp.emplace_back( prop_t ( new options( "Plan", { "A","B","C"} )));
+}</pre><pre>void Save( const prop::vector_t&amp; vp)
+{
+    msgbox mb;
+    for( auto prop : vp )
+    {
+        mb &lt;&lt; prop-&gt;myName &lt;&lt; " "
+           &lt;&lt; prop-&gt;ValueAsString() &lt;&lt; " | ";
+    }
+    mb();
+}
+     int main()
+     {
+        form fm;</pre><pre>        // construct property grid
+        prop::grid pg( fm, nana::rectangle(10, 25, 280, 150 ));</pre><pre>        // construct vector to store properties
+        // as we work with them
+        prop::vector_t vp;</pre><pre>        //read initial properties
+        Read( vp );</pre><pre>        // Place properties into grid
+        pg.Set( vp );</pre><pre>        // Button to save the edited properties
+        button save( fm,  nana::rectangle(60, 5, 50, 20 ));
+        save.caption("SAVE");
+        save.events().click([vp]
+        {
+            // user has clicked save button
+            // save the properties with their edited values
+            Save( vp );
+        });</pre><pre>        // show the user what we have
+        fm.show();</pre><pre>        // let user edit and save properties
+        exec();
+        }
+        }
+</pre> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon Jul 17 2017 15:47:07 for Nana_Property_Grid by
+    <li class="footer">Generated on Mon Jul 17 2017 16:31:49 for Nana_Property_Grid by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

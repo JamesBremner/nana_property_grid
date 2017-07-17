@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['real',['real',['../classnana_1_1prop_1_1real.html',1,'nana::prop']]],
-  ['resize',['Resize',['../classnana_1_1grid.html#aa3e7711f96a44f1134f5c8bf3412fe11',1,'nana::grid']]]
+  ['property_5fbase',['property_base',['../classnana_1_1prop_1_1property__base.html',1,'nana::prop::property_base'],['../classnana_1_1prop_1_1property__base.html#a3519e1b6fcd6d70723597c39b183b8b1',1,'nana::prop::property_base::property_base()']]]
 ];
