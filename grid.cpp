@@ -1,6 +1,7 @@
 #include <set>
 #include <nana/gui.hpp>
 #include <nana/gui/widgets/checkbox.hpp>
+#include <nana/gui/widgets/group.hpp>
 #include <grid.hpp>
 namespace nana
 {
@@ -53,6 +54,79 @@ bool grid::CheckIndex( int row, int col )
 namespace prop
 {
 
+std::string text::Edit( window wd )
+{
+    inputbox::text value(
+        myName,
+        myValue );
+    inputbox inbox(wd,"Edit property value");
+    if( inbox.show_modal( value ) )
+    {
+        // store value
+        SetValue( value.value() );
+    }
+    return ValueAsString();
+}
+
+std::string integer::Edit( window wd )
+{
+    std::stringstream sv;
+    sv << myValue;
+    inputbox::text value(
+        myName,
+        sv.str() );
+    inputbox inbox(wd,"Edit property value");
+    if( inbox.show_modal( value ) )
+    {
+        // store value
+        SetValue( value.value() );
+    }
+    return ValueAsString();
+}
+
+std::string real::Edit( window wd )
+{
+    std::stringstream sv;
+    sv << myValue;
+    inputbox::text value(
+        myName,
+        sv.str() );
+    inputbox inbox(wd,"Edit property value");
+    if( inbox.show_modal( value ) )
+    {
+        // store value
+        SetValue( value.value() );
+    }
+    return ValueAsString();
+}
+std::string options::Edit( window wd )
+{
+    inputbox::text value(
+        myName,
+        Options() );
+    inputbox inbox(wd,"Edit property value");
+    if( inbox.show_modal( value ) )
+    {
+        // store value
+        SetValue( value.value() );
+    }
+    return ValueAsString();
+}
+
+std::string truefalse::Edit( window wd )
+{
+    inputbox::text value(
+        myName,
+        std::vector< std::string > { "true", "false"} );
+    inputbox inbox(wd,"Edit property value");
+    if( inbox.show_modal( value ) )
+    {
+        // store value
+        SetValue( value.value() );
+    }
+    return ValueAsString();
+}
+
 grid::grid( window wd, const rectangle& r)
     : nana::grid( wd, r )
 {
@@ -67,71 +141,57 @@ grid::grid( window wd, const rectangle& r)
         auto sp = selected();
         if( sp.size() != 1 )
             return;
-        std::string propName = at(sp[0]).text(0);
+        at(sp[0]).text(
+            1,
+            myVP->at( at(sp[0]).value<int>() )->Edit( wd ));
 
-        // extract index of property in external vector
-        // from the associated value of the listbox item clicked on
-        int propIndex = at(sp[0]).value<int>();
-
-        switch( myVP->at( propIndex )->Type() )
-        {
-
-        default:
-        {
-            inputbox::text value(
-                propName,
-                at(sp[0]).text(1) );
-            inputbox inbox(wd,"Edit property value");
-            if( inbox.show_modal( value ) )
-            {
-                // user has entered new value
-
-                // display value
-                at(sp[0]).text(1,value.value());
-
-                // store value
-                myVP->at( propIndex )->SetValue( value.value() );
-            }
-        }
-        break;
-
-        case ePropertyType::Bool:
-        {
-            std::vector< std::string> opts {"true", "false"};
-            inputbox::text value(
-                propName, opts);
-            inputbox inbox(wd,"Edit property value");
-            if( inbox.show_modal( value ) )
-            {
-                // display value
-                at(sp[0]).text(1,value.value());
-
-                // store value
-                myVP->at( propIndex )->SetValue( value.value() );
-            }
-        }
-        break;
-
-        case ePropertyType::Enm:
-        {
-            inputbox::text value(
-                propName,
-                myVP->at( propIndex )->Options() );
-            inputbox inbox(wd,"Edit property value");
-            if( inbox.show_modal( value ) )
-            {
-                // display value
-                at(sp[0]).text(1,value.value());
-
-                // store value
-                myVP->at( propIndex )->SetValue( value.value() );
-            }
-        }
-        break;
-
-        case ePropertyType::Cat:
-            break;
-        }
+//        std::string propName = at(sp[0]).text(0);
+//
+//        // extract index of property in external vector
+//        // from the associated value of the listbox item clicked on
+//        int propIndex = at(sp[0]).value<int>();
+//
+//        switch( myVP->at( propIndex )->Type() )
+//        {
+//
+//        default:
+//        {
+//            inputbox::text value(
+//                propName,
+//                at(sp[0]).text(1) );
+//            inputbox inbox(wd,"Edit property value");
+//            if( inbox.show_modal( value ) )
+//            {
+//                // user has entered new value
+//
+//                // display value
+//                at(sp[0]).text(1,value.value());
+//
+//                // store value
+//                myVP->at( propIndex )->SetValue( value.value() );
+//            }
+//        }
+//        break;
+//
+//        case ePropertyType::Bool:
+//
+//            at(sp[0]).text(
+//                1,
+//                myVP->at( propIndex )->Edit( wd ));
+//
+//            break;
+//
+//        case ePropertyType::Enm:
+//
+//            at(sp[0]).text(
+//                1,
+//                myVP->at( propIndex )->Edit( wd ));
+//
+//            break;
+//
+//        case ePropertyType::Cat:
+//            break;
+//        }
     });
 }
 

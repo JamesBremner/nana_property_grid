@@ -258,6 +258,10 @@ public:
     {
         return std::vector< std::string >();
     }
+    virtual std::string Edit( window wd )
+    {
+        return "property_base";
+    }
 
 protected:
     ePropertyType myType;
@@ -319,6 +323,109 @@ public:
 
 };
 
+class text :  public property_base
+{
+public:
+    text( const std::string& name, const std::string& sv )
+        : property_base( name, name, ePropertyType::Str )
+    {
+        myValue = sv;
+    }
+    text(
+        const std::string& name,
+        const std::string& label,
+        const std::string& sv )
+        : property_base( name, label, ePropertyType::Str )
+    {
+        myValue = sv;
+    }
+    std::string ValueAsString() const
+    {
+        return myValue;
+    }
+    void SetValue( const std::string& sv )
+    {
+        myValue = sv;
+    }
+
+    std::string Edit( window wd );
+
+private:
+    std::string myValue;
+};
+
+class integer :  public property_base
+{
+public:
+    integer( const std::string& name, int v )
+        : property_base( name, name, ePropertyType::Str )
+    {
+        myValue = v;
+    }
+    integer(
+        const std::string& name,
+        const std::string& label,
+        int v )
+        : property_base( name, label, ePropertyType::Str )
+    {
+        myValue = v;
+    }
+    std::string ValueAsString() const
+    {
+        std::stringstream ss;
+        ss << myValue;
+        return ss.str();
+    }
+    void SetValue( const std::string& sv )
+    {
+        myValue = atoi(sv.c_str() );
+    }
+    void SetValue( int v)
+    {
+        myValue = v;
+    }
+    std::string Edit( window wd );
+
+private:
+    int myValue;
+};
+
+class real :  public property_base
+{
+public:
+    real( const std::string& name, double v )
+        : property_base( name, name, ePropertyType::Str )
+    {
+        myValue = v;
+    }
+    real(
+        const std::string& name,
+        const std::string& label,
+        double v )
+        : property_base( name, label, ePropertyType::Str )
+    {
+        myValue = v;
+    }
+    std::string ValueAsString() const
+    {
+        std::stringstream ss;
+        ss << myValue;
+        return ss.str();
+    }
+    void SetValue( const std::string& sv )
+    {
+        myValue = atof(sv.c_str() );
+    }
+    void SetValue( int v)
+    {
+        myValue = v;
+    }
+    std::string Edit( window wd );
+
+private:
+    double myValue;
+};
+
 class category : public property_base
 {
 public:
@@ -334,9 +441,47 @@ public:
         return myName;
     }
 
+    /** Categories do not have values, NOP function to satisfy compiler */
     void SetValue( const std::string& sv )
     {}
 
+};
+
+class truefalse : public property_base
+{
+public:
+
+    truefalse( const std::string& name, bool f )
+        : property_base( name, name, ePropertyType::Bool )
+    {
+        myValue = f;
+    }
+    truefalse(
+        const std::string& name,
+        const std::string& label,
+        bool f )
+        : property_base( name, label, ePropertyType::Bool )
+    {
+        myValue = f;
+    }
+    std::string ValueAsString() const
+    {
+        if( myValue )
+            return "true";
+        return "false";
+    }
+    void SetValue( const std::string& sv )
+    {
+        if( sv == "true" )
+            myValue = true;
+        else
+            myValue = false;
+    }
+
+    std::string Edit( window wd );
+
+private:
+    bool myValue;
 };
 
 class options : public property_base
@@ -373,6 +518,9 @@ public:
         else
             mySelection = it - myValue.begin();
     }
+
+    std::string Edit( window wd );
+
 private:
     std::vector< std::string > myValue;
     int mySelection;
