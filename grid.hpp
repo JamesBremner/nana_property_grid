@@ -50,171 +50,6 @@ enum class ePropertyType
     Cat,
 };
 
-template <class T>
-class value
-{
-public:
-
-    T myValue;
-    int mySelected;
-
-    value()
-        : mySelected( 0 )
-    {
-
-    }
-
-    std::string AsString() const
-    {
-        std::stringstream ss;
-        ss << myValue;
-        return ss.str();
-    }
-    void SetValue( const std::string& sv )
-    {
-        myValue = sv;
-    }
-    ePropertyType Type()
-    {
-        return ePropertyType::Str;
-    }
-
-    std::vector< std::string > Options()
-    {
-        return std::vector< std::string >();
-    }
-};
-
-template <>
-class value<int>
-{
-public:
-
-    int myValue;
-    int mySelected;
-
-    std::string AsString() const
-    {
-        std::stringstream ss;
-        ss << myValue;
-        return ss.str();
-    }
-    void SetValue( const std::string& sv )
-    {
-        myValue = atoi( sv.c_str() );
-    }
-    ePropertyType Type()
-    {
-        return ePropertyType::Int;
-    }
-    std::vector< std::string > Options()
-    {
-        return std::vector< std::string >();
-    }
-
-};
-
-template <>
-class value<double>
-{
-public:
-
-    double myValue;
-    int mySelected;
-
-    std::string AsString() const
-    {
-        std::stringstream ss;
-        ss << myValue;
-        return ss.str();
-    }
-    void SetValue( const std::string& sv )
-    {
-        myValue = atof( sv.c_str() );
-    }
-    ePropertyType Type()
-    {
-        return ePropertyType::Dbl;
-    }
-    std::vector< std::string > Options()
-    {
-        return std::vector< std::string >();
-    }
-};
-
-template <>
-class value<bool>
-{
-public:
-
-    bool myValue;
-    int mySelected;
-
-    std::string AsString() const
-    {
-        if( myValue )
-            return "true";
-        return "false";
-    }
-    void SetValue( const std::string& sv )
-    {
-        myValue = ( sv == "true" );
-    }
-    ePropertyType Type()
-    {
-        return ePropertyType::Bool;
-    }
-    std::vector< std::string > Options()
-    {
-        return std::vector< std::string >();
-    }
-};
-
-/// Specialisation for enumerated string value
-
-template <>
-class value<std::vector<std::string>>
-{
-public:
-
-    std::vector<std::string> myValue;
-    int mySelected;
-
-    value()
-        : mySelected( 0 )
-    {
-    }
-
-    std::string AsString() const
-    {
-        if( ( ! myValue.size() ) ||
-                0 > mySelected  ||
-                mySelected >=  (int)myValue.size() )
-            return "";
-        return myValue[ mySelected];
-    }
-    void SetValue( const std::string& sv )
-    {
-        auto it = std::find(
-                      myValue.begin(),
-                      myValue.end(),
-                      sv );
-        if( it == myValue.end() )
-            mySelected = 0;
-        else
-            mySelected = it - myValue.begin();
-    }
-
-    ePropertyType Type()
-    {
-        return ePropertyType::Enm;
-    }
-    std::vector< std::string > Options()
-    {
-        return myValue;
-    }
-};
-
 /** Property base class
 
 This non-templated base class allows pointers to properties of any type
@@ -265,62 +100,6 @@ public:
 
 protected:
     ePropertyType myType;
-};
-
-/** Property -  a name value pair with templated value type */
-
-template <class T>
-class property : public property_base
-{
-public:
-
-    value<T> myValue;
-
-    /** CTOR
-        @param[in] name of property, must be unique
-        @param[in] label for property, can be duplicated
-        @param[in] value
-    */
-    property(
-        const std::string& name,
-        const std::string& label,
-        const T& value )
-        : property_base( name, label )
-    {
-        myValue.myValue = value;
-    }
-
-    /** CTOR
-        @param[in] name and label of property, must be unique
-        @param[in] value
-    */
-    property(
-        const std::string& name,
-        const T& value )
-        : property_base( name, name )
-    {
-        myValue.myValue = value;
-    }
-    std::string ValueAsString() const
-    {
-        return myValue.AsString();
-    }
-
-    void SetValue( const std::string& sv )
-    {
-        myValue.SetValue( sv );
-    }
-
-    ePropertyType Type()
-    {
-        return myValue.Type();
-    }
-
-    std::vector< std::string > Options()
-    {
-        return myValue.Options();
-    }
-
 };
 
 class text :  public property_base
@@ -558,11 +337,11 @@ public:
 //        const std::string& name,
 //        const std::string& value );
 
-    template <class T>
-    void Set( const property<T>& prop )
-    {
-        Set( prop.myName, prop.ValueAsString() );
-    }
+//    template <class T>
+//    void Set( const property<T>& prop )
+//    {
+//        Set( prop.myName, prop.ValueAsString() );
+//    }
 
 
 private:

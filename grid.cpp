@@ -138,60 +138,17 @@ grid::grid( window wd, const rectangle& r)
     // prompt user to edit value of property clicked on
     events().click([this,wd]
     {
+        // Ensure user selected just one property
+        // ( multiple property selection is ignored )
         auto sp = selected();
         if( sp.size() != 1 )
             return;
+
+        // Edit selected property and display new value
         at(sp[0]).text(
             1,
             myVP->at( at(sp[0]).value<int>() )->Edit( wd ));
 
-//        std::string propName = at(sp[0]).text(0);
-//
-//        // extract index of property in external vector
-//        // from the associated value of the listbox item clicked on
-//        int propIndex = at(sp[0]).value<int>();
-//
-//        switch( myVP->at( propIndex )->Type() )
-//        {
-//
-//        default:
-//        {
-//            inputbox::text value(
-//                propName,
-//                at(sp[0]).text(1) );
-//            inputbox inbox(wd,"Edit property value");
-//            if( inbox.show_modal( value ) )
-//            {
-//                // user has entered new value
-//
-//                // display value
-//                at(sp[0]).text(1,value.value());
-//
-//                // store value
-//                myVP->at( propIndex )->SetValue( value.value() );
-//            }
-//        }
-//        break;
-//
-//        case ePropertyType::Bool:
-//
-//            at(sp[0]).text(
-//                1,
-//                myVP->at( propIndex )->Edit( wd ));
-//
-//            break;
-//
-//        case ePropertyType::Enm:
-//
-//            at(sp[0]).text(
-//                1,
-//                myVP->at( propIndex )->Edit( wd ));
-//
-//            break;
-//
-//        case ePropertyType::Cat:
-//            break;
-//        }
     });
 }
 
@@ -237,16 +194,6 @@ void grid::Set( vector_t& v )
         propIndex++;
     }
 }
-
-
-//
-//void grid::Set(
-//    const std::string& name,
-//    const std::string& value )
-//{
-//    int row = myMap.find( name )->second;
-//    nana::grid::Set( row, 1, value );
-//}
 
 
 }
