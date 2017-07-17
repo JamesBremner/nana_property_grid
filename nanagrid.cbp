@@ -52,7 +52,7 @@
 			<debugger />
 			<DoxyBlocks>
 				<comment_style block="0" line="0" />
-				<doxyfile_project />
+				<doxyfile_project output_directory="docs" />
 				<doxyfile_build />
 				<doxyfile_warnings />
 				<doxyfile_output />
