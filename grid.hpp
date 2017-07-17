@@ -21,7 +21,16 @@ public:
     /** Resize the grid */
     void Resize( int rows, int cols );
 
+    /** Title the column
+        @param[in] col zero-based column index
+        @param[in] value the column title
+    */
     void ColTitle( int col, const std::string& value );
+
+    /** Specify column width
+     @param[in] col zero-based column index
+     @param[in] width in pixels
+    */
     void ColWidth( int col, int width );
 
     /** Set cell value */
@@ -52,9 +61,6 @@ enum class ePropertyType
 
 /** Property base class
 
-This non-templated base class allows pointers to properties of any type
-to be stored in a vector, avoiding the problem of 'type slicing'
-cf https://stackoverflow.com/a/16527721/16582
 */
 
 class property_base
@@ -63,15 +69,11 @@ public:
     std::string myName;
     std::string myLabel;
 
-    property_base(
-        const std::string name,
-        const std::string label )
-        : myName( name )
-        , myLabel( label )
-    {
-
-    }
-
+    /** CTOR
+        @param[in] name must be unique
+        @param[in] label to display, need not be unique
+        @param[in] type of property
+    */
     property_base(
         const std::string name,
         const std::string label,
@@ -84,7 +86,20 @@ public:
     }
 
     virtual std::string ValueAsString() const = 0;
+
     virtual void SetValue( const std::string& sv ) = 0;
+
+    /** Edit option value
+        @return new value as string
+
+        This is a pure virtual function
+        that must be reimplemented for each specialized property
+        to pop up a dialog prompting user for the new value.
+
+        inputbox is very helpful for doing this
+    */
+    virtual std::string Edit( window wd ) = 0;
+
     ePropertyType Type()
     {
         return myType;
@@ -93,14 +108,12 @@ public:
     {
         return std::vector< std::string >();
     }
-    virtual std::string Edit( window wd )
-    {
-        return "property_base";
-    }
 
 protected:
     ePropertyType myType;
 };
+
+/** Class than take string values */
 
 class text :  public property_base
 {
@@ -132,6 +145,8 @@ public:
 private:
     std::string myValue;
 };
+
+/** Property that can take whole number values */
 
 class integer :  public property_base
 {
@@ -169,6 +184,8 @@ private:
     int myValue;
 };
 
+/** Property that takes double floating point values */
+
 class real :  public property_base
 {
 public:
@@ -205,6 +222,12 @@ private:
     double myValue;
 };
 
+/** Separator marking start of new category or group which can be collapsed.
+
+Unfortunately categories can only be collapsed by the user
+http://nanapro.org/en-us/forum/index.php?u=/topic/184/gglistbox-category-feature-requests
+
+*/
 class category : public property_base
 {
 public:
@@ -224,8 +247,12 @@ public:
     void SetValue( const std::string& sv )
     {}
 
+    /** Categories cannot be edited, NOP function to satisfy compiler */
+    std::string Edit( window wd ) { return ""; }
+
 };
 
+/** Property that can be true or false */
 class truefalse : public property_base
 {
 public:
@@ -263,6 +290,8 @@ private:
     bool myValue;
 };
 
+/** Property that can take on one of a defined set of string values */
+
 class options : public property_base
 {
 public:
@@ -286,6 +315,12 @@ public:
         return myValue;
     }
 
+    /** Set value to one of the options
+        @param[in] sv option string to select
+
+        If sv is not equal to any of the options
+        then the first option is selected
+    */
     void SetValue( const std::string& sv )
     {
         auto it = std::find(
