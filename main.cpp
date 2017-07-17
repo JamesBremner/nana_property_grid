@@ -14,22 +14,23 @@ using namespace nana;
 void Read( prop::vector_t& vp)
 {
     using namespace prop;
-    vp.emplace_back(new property<std::string>( "A", "10" ));
-    vp.emplace_back(new property<int>( "B", 99 ));
-    //vp.emplace_back(new property<int>( "B", 100 ));   // Duplicate name
-    vp.emplace_back(new property<double>( "C", 0.42 ));
-    vp.emplace_back(new property<category_property>("second category",""));
-    vp.emplace_back(new property<std::string>( "D", "10" ));
-    vp.emplace_back(new property<int>( "E", 99 ));
-    vp.emplace_back(new property<double>( "F", 0.42 ));
-    vp.emplace_back(new property<bool>( "G", "the G factor", false ));
-    vp.emplace_back(new property<std::vector<std::string>>( "Plan", { "A","B","C"} ));
+    vp.emplace_back( prop_t ( new text( "A", "10" )));
+    vp.emplace_back( prop_t ( new integer( "B", 99 )));
+    //vp.emplace_back(prop_t ( new integer( "B", 9999 )));
+    vp.emplace_back( prop_t ( new real( "C", 0.42 )));
+
+    vp.emplace_back( prop_t ( new prop::category( "second category")));
+    vp.emplace_back( prop_t ( new text( "D", "10" )));
+    vp.emplace_back( prop_t ( new integer( "E", 99 )));
+    vp.emplace_back( prop_t ( new real( "F", 0.42 )));
+    vp.emplace_back( prop_t ( new truefalse( "G", "the G factor", false )));
+    vp.emplace_back( prop_t ( new options( "Plan", { "A","B","C"} )));
 }
 
 /** Save properties
     @param[in] properties A vector of properties
 
-    In productoion code, this would write the properties out to a file or database.
+    In production code, this would write the properties out to a file or database.
     For testing we will simply dispay them in a message box
 */
 void Save( const prop::vector_t& vp)

@@ -21,7 +21,16 @@ public:
     /** Resize the grid */
     void Resize( int rows, int cols );
 
+    /** Title the column
+        @param[in] col zero-based column index
+        @param[in] value the column title
+    */
     void ColTitle( int col, const std::string& value );
+
+    /** Specify column width
+     @param[in] col zero-based column index
+     @param[in] width in pixels
+    */
     void ColWidth( int col, int width );
 
     /** Set cell value */
@@ -50,180 +59,8 @@ enum class ePropertyType
     Cat,
 };
 
-class category_property : std::string
-{
-};
-
-template <class T>
-class value
-{
-public:
-
-    T myValue;
-    int mySelected;
-
-    value()
-        : mySelected( 0 )
-    {
-
-    }
-
-    std::string AsString() const
-    {
-        std::stringstream ss;
-        ss << myValue;
-        return ss.str();
-    }
-    void SetValue( const std::string& sv )
-    {
-        myValue = sv;
-    }
-    ePropertyType Type()
-    {
-        return ePropertyType::Str;
-    }
-
-    std::vector< std::string > Options()
-    {
-        return std::vector< std::string >();
-    }
-};
-
-template <>
-class value<int>
-{
-public:
-
-    int myValue;
-    int mySelected;
-
-    std::string AsString() const
-    {
-        std::stringstream ss;
-        ss << myValue;
-        return ss.str();
-    }
-    void SetValue( const std::string& sv )
-    {
-        myValue = atoi( sv.c_str() );
-    }
-    ePropertyType Type()
-    {
-        return ePropertyType::Int;
-    }
-    std::vector< std::string > Options()
-    {
-        return std::vector< std::string >();
-    }
-
-};
-
-template <>
-class value<double>
-{
-public:
-
-    double myValue;
-    int mySelected;
-
-    std::string AsString() const
-    {
-        std::stringstream ss;
-        ss << myValue;
-        return ss.str();
-    }
-    void SetValue( const std::string& sv )
-    {
-        myValue = atof( sv.c_str() );
-    }
-    ePropertyType Type()
-    {
-        return ePropertyType::Dbl;
-    }
-    std::vector< std::string > Options()
-    {
-        return std::vector< std::string >();
-    }
-};
-
-template <>
-class value<bool>
-{
-public:
-
-    bool myValue;
-    int mySelected;
-
-    std::string AsString() const
-    {
-        if( myValue )
-            return "true";
-        return "false";
-    }
-    void SetValue( const std::string& sv )
-    {
-        myValue = ( sv == "true" );
-    }
-    ePropertyType Type()
-    {
-        return ePropertyType::Bool;
-    }
-    std::vector< std::string > Options()
-    {
-        return std::vector< std::string >();
-    }
-};
-
-/// Specialisation for enumerated string value
-
-template <>
-class value<std::vector<std::string>>
-{
-public:
-
-    std::vector<std::string> myValue;
-    int mySelected;
-
-    value()
-        : mySelected( 0 )
-    {
-    }
-
-    std::string AsString() const
-    {
-        if( ( ! myValue.size() ) ||
-                0 > mySelected  ||
-                mySelected >=  myValue.size() )
-            return "";
-        return myValue[ mySelected];
-    }
-    void SetValue( const std::string& sv )
-    {
-        auto it = std::find(
-                      myValue.begin(),
-                      myValue.end(),
-                      sv );
-        if( it == myValue.end() )
-            mySelected = 0;
-        else
-            mySelected = it - myValue.begin();
-    }
-
-    ePropertyType Type()
-    {
-        return ePropertyType::Enm;
-    }
-    std::vector< std::string > Options()
-    {
-        return myValue;
-    }
-};
-
 /** Property base class
 
-This non-templated base class allows pointers to properties of any type
-to be stored in a vector, avoiding the problem of 'type slicing'
-cf https://stackoverflow.com/a/16527721/16582
 */
 
 class property_base
@@ -232,137 +69,283 @@ public:
     std::string myName;
     std::string myLabel;
 
+    /** CTOR
+        @param[in] name must be unique
+        @param[in] label to display, need not be unique
+        @param[in] type of property
+    */
     property_base(
         const std::string name,
-        const std::string label )
+        const std::string label,
+        ePropertyType type )
         : myName( name )
         , myLabel( label )
+        , myType( type )
     {
 
     }
 
     virtual std::string ValueAsString() const = 0;
+
     virtual void SetValue( const std::string& sv ) = 0;
-    virtual ePropertyType Type() = 0;
-    virtual std::vector< std::string > Options() = 0;
-};
 
-/** Property -  a name value pair with templated value type */
+    /** Edit option value
+        @return new value as string
 
-template <class T>
-class property : public property_base
-{
-public:
+        This is a pure virtual function
+        that must be reimplemented for each specialized property
+        to pop up a dialog prompting user for the new value.
 
-    value<T> myValue;
-
-    /** CTOR
-        @param[in] name of property, must be unique
-        @param[in] label for property, can be duplicated
-        @param[in] value
+        inputbox is very helpful for doing this
     */
-    property(
-        const std::string& name,
-        const std::string& label,
-        const T& value )
-        : property_base( name, label )
-    {
-        myValue.myValue = value;
-    }
-
-    /** CTOR
-        @param[in] name and label of property, must be unique
-        @param[in] value
-    */
-    property(
-        const std::string& name,
-        const T& value )
-        : property_base( name, name )
-    {
-        myValue.myValue = value;
-    }
-    std::string ValueAsString() const
-    {
-        return myValue.AsString();
-    }
-
-    void SetValue( const std::string& sv )
-    {
-        myValue.SetValue( sv );
-    }
+    virtual std::string Edit( window wd ) = 0;
 
     ePropertyType Type()
     {
-        return myValue.Type();
+        return myType;
     }
-
-    std::vector< std::string > Options()
+    virtual std::vector< std::string > Options()
     {
-        return myValue.Options();
+        return std::vector< std::string >();
     }
 
+protected:
+    ePropertyType myType;
 };
 
+/** Class than take string values */
 
-template <>
-class property<category_property> : public property_base
+class text :  public property_base
 {
 public:
-
-    value<std::string> myValue;
-
-    /** CTOR
-        @param[in] name of property, must be unique
-        @param[in] label for property, can be duplicated
-        @param[in] value
-    */
-    property(
+    text( const std::string& name, const std::string& sv )
+        : property_base( name, name, ePropertyType::Str )
+    {
+        myValue = sv;
+    }
+    text(
         const std::string& name,
         const std::string& label,
-        const std::string& value )
-        : property_base( name, name )
+        const std::string& sv )
+        : property_base( name, label, ePropertyType::Str )
     {
-        myValue.myValue = name;
+        myValue = sv;
+    }
+    std::string ValueAsString() const
+    {
+        return myValue;
+    }
+    void SetValue( const std::string& sv )
+    {
+        myValue = sv;
     }
 
-    /** CTOR
-        @param[in] name and label of property, must be unique
-        @param[in] value
-    */
-    property(
-        const std::string& name,
-        const std::string& value )
-        : property_base( name, name )
+    std::string Edit( window wd );
+
+private:
+    std::string myValue;
+};
+
+/** Property that can take whole number values */
+
+class integer :  public property_base
+{
+public:
+    integer( const std::string& name, int v )
+        : property_base( name, name, ePropertyType::Str )
     {
-        myValue.myValue = name;
+        myValue = v;
+    }
+    integer(
+        const std::string& name,
+        const std::string& label,
+        int v )
+        : property_base( name, label, ePropertyType::Str )
+    {
+        myValue = v;
+    }
+    std::string ValueAsString() const
+    {
+        std::stringstream ss;
+        ss << myValue;
+        return ss.str();
+    }
+    void SetValue( const std::string& sv )
+    {
+        myValue = atoi(sv.c_str() );
+    }
+    void SetValue( int v)
+    {
+        myValue = v;
+    }
+    std::string Edit( window wd );
+
+private:
+    int myValue;
+};
+
+/** Property that takes double floating point values */
+
+class real :  public property_base
+{
+public:
+    real( const std::string& name, double v )
+        : property_base( name, name, ePropertyType::Str )
+    {
+        myValue = v;
+    }
+    real(
+        const std::string& name,
+        const std::string& label,
+        double v )
+        : property_base( name, label, ePropertyType::Str )
+    {
+        myValue = v;
+    }
+    std::string ValueAsString() const
+    {
+        std::stringstream ss;
+        ss << myValue;
+        return ss.str();
+    }
+    void SetValue( const std::string& sv )
+    {
+        myValue = atof(sv.c_str() );
+    }
+    void SetValue( int v)
+    {
+        myValue = v;
+    }
+    std::string Edit( window wd );
+
+private:
+    double myValue;
+};
+
+/** Separator marking start of new category or group which can be collapsed.
+
+Unfortunately categories can only be collapsed by the user
+http://nanapro.org/en-us/forum/index.php?u=/topic/184/gglistbox-category-feature-requests
+
+*/
+class category : public property_base
+{
+public:
+    /** CTOR
+    @param[in] name of category
+    */
+    category( const std::string& name )
+        : property_base( name, name, ePropertyType::Cat )
+    {
     }
     std::string ValueAsString() const
     {
         return myName;
     }
 
+    /** Categories do not have values, NOP function to satisfy compiler */
+    void SetValue( const std::string& sv )
+    {}
+
+    /** Categories cannot be edited, NOP function to satisfy compiler */
+    std::string Edit( window wd ) { return ""; }
+
+};
+
+/** Property that can be true or false */
+class truefalse : public property_base
+{
+public:
+
+    truefalse( const std::string& name, bool f )
+        : property_base( name, name, ePropertyType::Bool )
+    {
+        myValue = f;
+    }
+    truefalse(
+        const std::string& name,
+        const std::string& label,
+        bool f )
+        : property_base( name, label, ePropertyType::Bool )
+    {
+        myValue = f;
+    }
+    std::string ValueAsString() const
+    {
+        if( myValue )
+            return "true";
+        return "false";
+    }
     void SetValue( const std::string& sv )
     {
-        myValue.SetValue( sv );
+        if( sv == "true" )
+            myValue = true;
+        else
+            myValue = false;
     }
 
-    ePropertyType Type()
+    std::string Edit( window wd );
+
+private:
+    bool myValue;
+};
+
+/** Property that can take on one of a defined set of string values */
+
+class options : public property_base
+{
+public:
+    options( const std::string& name,
+             const std::vector< std::string >& vopts )
+        : property_base( name, name, ePropertyType::Enm )
+        , myValue( vopts )
+        , mySelection( 0 )
     {
-        return ePropertyType::Cat;
+
+    }
+    std::string ValueAsString() const
+    {
+        if( 0 > mySelection || mySelection >= (int)myValue.size() )
+            return "";
+        return myValue[ mySelection ];
     }
 
     std::vector< std::string > Options()
     {
-        return myValue.Options();
+        return myValue;
     }
 
+    /** Set value to one of the options
+        @param[in] sv option string to select
+
+        If sv is not equal to any of the options
+        then the first option is selected
+    */
+    void SetValue( const std::string& sv )
+    {
+        auto it = std::find(
+                      myValue.begin(),
+                      myValue.end(),
+                      sv );
+        if( it == myValue.end() )
+            mySelection = 0;
+        else
+            mySelection = it - myValue.begin();
+    }
+
+    std::string Edit( window wd );
+
+private:
+    std::vector< std::string > myValue;
+    int mySelection;
 };
 
 
 
 
 /** vector of pointers to properties */
-typedef std::vector< std::shared_ptr< property_base > > vector_t;
+typedef std::shared_ptr< property_base > prop_t;
+typedef std::vector< prop_t > vector_t;
 
 /** Property grid for handling name/value pairs */
 
@@ -389,11 +372,11 @@ public:
 //        const std::string& name,
 //        const std::string& value );
 
-    template <class T>
-    void Set( const property<T>& prop )
-    {
-        Set( prop.myName, prop.ValueAsString() );
-    }
+//    template <class T>
+//    void Set( const property<T>& prop )
+//    {
+//        Set( prop.myName, prop.ValueAsString() );
+//    }
 
 
 private:
