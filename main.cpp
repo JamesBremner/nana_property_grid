@@ -1,3 +1,6 @@
+// nana::grid::prop demo program using templates
+
+
 #include <nana/gui.hpp>
 #include <nana/gui/widgets/button.hpp>
 #include <grid.hpp>
