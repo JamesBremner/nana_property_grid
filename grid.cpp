@@ -171,6 +171,11 @@ void grid::Set( vector_t& v )
             {
                 // add new category
                 cat = append( prop->myLabel);
+
+                // suppress display of number of items in category
+                cat.display_number( false );
+
+                // store category index in property
                 catIndex++;
                 prop->category_index( catIndex );
             }
