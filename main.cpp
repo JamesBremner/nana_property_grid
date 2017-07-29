@@ -143,6 +143,8 @@ int main()
             Save( vp );
         });
 
+        pg.Collapse("second category");
+
         // show the user what we have
         fm.show();
 

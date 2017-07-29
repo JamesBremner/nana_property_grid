@@ -159,6 +159,7 @@ void grid::Set( vector_t& v )
     myVP = &v;
     std::set< std::string > NameSet;
     int propIndex = 0;
+    int catIndex = 0;
     auto cat = at(0);
     for( auto& prop : *myVP )
     {
@@ -170,6 +171,8 @@ void grid::Set( vector_t& v )
             {
                 // add new category
                 cat = append( prop->myLabel);
+                catIndex++;
+                prop->category_index( catIndex );
             }
             else
             {
@@ -192,6 +195,22 @@ void grid::Set( vector_t& v )
         }
 
         propIndex++;
+    }
+}
+void  grid::Collapse(
+    const std::string& category_name,
+    bool fCollapse )
+{
+    int row = 0;
+    for( auto p : *myVP )
+    {
+        if( *p == category_name )
+        {
+            at( p->category_index() ).expanded( ! fCollapse );
+
+            break;
+        }
+        row++;
     }
 }
 

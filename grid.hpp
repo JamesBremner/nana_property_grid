@@ -81,6 +81,7 @@ public:
         : myName( name )
         , myLabel( label )
         , myType( type )
+        , myCatIndex( 0 )
     {
 
     }
@@ -109,8 +110,24 @@ public:
         return std::vector< std::string >();
     }
 
+    bool operator==( const std::string& name )const
+    {
+        return ( myName == name );
+    }
+
+    void category_index( int i )
+    {
+        myCatIndex = i;
+    }
+
+    int category_index()
+    {
+        return myCatIndex;
+    }
+
 protected:
     ePropertyType myType;
+    int myCatIndex;
 };
 
 /** Class than take string values */
@@ -248,7 +265,10 @@ public:
     {}
 
     /** Categories cannot be edited, NOP function to satisfy compiler */
-    std::string Edit( window wd ) { return ""; }
+    std::string Edit( window wd )
+    {
+        return "";
+    }
 
 };
 
@@ -366,6 +386,15 @@ public:
         before the grid does
      */
     void Set( vector_t& v );
+
+    /** Collapse or expand a category
+
+    @param[in] category_name
+    @param[in] fCollapse true for collapse, false for expand, default is true
+    */
+    void Collapse(
+        const std::string& category_name,
+        bool fCollapse = true );
 
     /** Change value of existing property */
 //    void Set(
