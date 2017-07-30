@@ -167,7 +167,7 @@ void grid::Set( vector_t& v )
         std::string name = prop->myName;
         if ( NameSet.insert( name ).second )
         {
-            if( prop->Type() == ePropertyType::Cat )
+            if( prop->Type() == eType::Cat )
             {
                 // add new category
                 cat = append( prop->myLabel);
