@@ -1,4 +1,5 @@
-namespace nana {
+namespace nana
+{
 namespace prop
 {
 /** Property types supported */
@@ -112,11 +113,22 @@ protected:
 class text :  public property_base
 {
 public:
-    text( const std::string& name, const std::string& sv )
+    /** CTOR
+        @param[in] name unique name for property
+        @param[in] sv initial string value
+    */
+    text(
+        const std::string& name,
+        const std::string& sv )
         : property_base( name, name, eType::Str )
     {
         myValue = sv;
     }
+    /** CTOR
+    @param[in] name unique name for property
+    @param[in] label to display ( need not be unique )
+    @param[in] sv initial string value
+    */
     text(
         const std::string& name,
         const std::string& label,
@@ -133,7 +145,9 @@ public:
     {
         myValue = sv;
     }
-
+    /** Pop-up an editor for the value
+        @param[in] wd parent window
+    */
     std::string Edit( nana::window wd );
 
 private:
@@ -296,6 +310,15 @@ public:
     {
 
     }
+    options( const std::string& name,
+            const std::string& label,
+             const std::vector< std::string >& vopts )
+        : property_base( name, label, eType::Enm )
+        , myValue( vopts )
+        , mySelection( 0 )
+    {
+
+    }
     std::string ValueAsString() const
     {
         if( 0 > mySelection || mySelection >= (int)myValue.size() )
@@ -331,6 +354,102 @@ public:
 private:
     std::vector< std::string > myValue;
     int mySelection;
+};
+
+typedef std::shared_ptr< property_base > prop_t;
+
+class property_container
+{
+public:
+
+    void Add(
+        const std::string& name,
+        const std::string& label,
+        const std::string& value )
+    {
+        myProperties.emplace_back( prop_t ( new text( name, label, value )));
+    }
+    void Add(
+        const std::string& name,
+        const std::string& value )
+    {
+        Add( name, name, value );
+    }
+    void Add(
+        const std::string& name,
+        const std::string& label,
+        int value )
+    {
+        myProperties.emplace_back( prop_t ( new integer( name, label, value )));
+    }
+    void Add(
+        const std::string& name,
+        int value )
+    {
+        Add( name, name, value );
+    }
+    void Add(
+        const std::string& name,
+        const std::string& label,
+        double value )
+    {
+        myProperties.emplace_back( prop_t ( new real( name, label, value )));
+    }
+    void Add(
+        const std::string& name,
+        double value )
+    {
+        Add( name, name, value );
+    }
+    void Add(
+        const std::string& name )
+    {
+        myProperties.emplace_back( prop_t ( new prop::category( name )));
+    }
+    void AddBool(
+        const std::string& name,
+        const std::string& label,
+        bool value )
+    {
+        myProperties.emplace_back( prop_t ( new truefalse( name, label, value )));
+    }
+    void AddBool(
+        const std::string& name,
+        bool value )
+    {
+        Add( name, name, value );
+    }
+    void Add(
+        const std::string& name,
+        const std::string& label,
+        const std::vector< std::string >& value )
+    {
+        myProperties.emplace_back( prop_t ( new options( name, label, value )));
+    }
+    void Add(
+        const std::string& name,
+        const std::vector< std::string >& value )
+    {
+        Add( name, name, value );
+    }
+
+    std::vector< prop_t >& get()
+    {
+        return myProperties;
+    }
+
+    std::vector< prop_t >::const_iterator begin()
+    {
+        return myProperties.begin();
+    }
+
+    std::vector< prop_t >::const_iterator end()
+    {
+        return myProperties.end();
+    }
+
+private:
+    std::vector< prop_t > myProperties;
 };
 
 }

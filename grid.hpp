@@ -75,6 +75,11 @@ public:
      */
     void Set( vector_t& v );
 
+    void Set( property_container& pc )
+    {
+        Set( pc.get() );
+    }
+
     /** Collapse or expand a category
 
     @param[in] category_name

@@ -82,20 +82,20 @@ using namespace nana;
     For testing we will simply create some arbitrary properties
     */
 
-void Read( prop::vector_t& vp)
+
+void Read( prop::property_container& pc )
 {
     using namespace prop;
-    vp.emplace_back( prop_t ( new text( "A", "10" )));
-    vp.emplace_back( prop_t ( new integer( "B", 99 )));
-    //vp.emplace_back(prop_t ( new integer( "B", 9999 )));
-    vp.emplace_back( prop_t ( new real( "C", 0.42 )));
+    pc.Add( "A", "10" );
+    pc.Add( "B", 99 );
+    pc.Add( "C", 0.42 );
 
-    vp.emplace_back( prop_t ( new prop::category( "second category")));
-    vp.emplace_back( prop_t ( new text( "D", "10" )));
-    vp.emplace_back( prop_t ( new integer( "E", 99 )));
-    vp.emplace_back( prop_t ( new real( "F", 0.42 )));
-    vp.emplace_back( prop_t ( new truefalse( "G", "the G factor", false )));
-    vp.emplace_back( prop_t ( new options( "Plan", { "A","B","C"} )));
+    pc.Add( "second category");
+    pc.Add( "D", "10" );
+    pc.Add( "E", 99 );
+    pc.Add( "F", 0.42 );
+    pc.AddBool( "G", "the G factor", false );
+    pc.Add( "Plan", { "A","B","C"} );
 }
 
 /** Save properties
@@ -104,10 +104,10 @@ void Read( prop::vector_t& vp)
     In production code, this would write the properties out to a file or database.
     For testing we will simply display them in a message box
 */
-void Save( const prop::vector_t& vp)
+void Save( prop::property_container& pc )
 {
     msgbox mb;
-    for( auto prop : vp )
+    for( auto prop : pc )
     {
         mb << prop->myName << " "
            << prop->ValueAsString() << " | ";
@@ -123,24 +123,25 @@ int main()
         // construct property grid
         prop::grid pg( fm, nana::rectangle(10, 25, 280, 150 ));
 
-        // construct vector to store properties
+        // construct container to store properties
         // as we work with them
-        prop::vector_t vp;
+
+        prop::property_container pc;
 
         //read initial properties
-        Read( vp );
+        Read( pc );
 
         // Place properties into grid
-        pg.Set( vp );
+        pg.Set( pc );
 
         // Button to save the edited properties
         button save( fm,  nana::rectangle(60, 5, 50, 20 ));
         save.caption("SAVE");
-        save.events().click([vp]
+        save.events().click([&pc]( )
         {
             // user has clicked save button
             // save the properties with their edited values
-            Save( vp );
+            Save( pc );
         });
 
         pg.Collapse("second category");

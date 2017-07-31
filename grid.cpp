@@ -157,7 +157,11 @@ grid::grid( window wd, const rectangle& r)
 void grid::Set( vector_t& v )
 {
     myVP = &v;
+
+    // maintain a set of property names
+    // used to enforce unique names
     std::set< std::string > NameSet;
+
     int propIndex = 0;
     int catIndex = 0;
     auto cat = at(0);
